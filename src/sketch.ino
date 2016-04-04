@@ -8,16 +8,19 @@ const int ledPin = 5;
 const int airflowPin = 13; //const int clampPin = 3; // I renamed this since we moved from a pinch valve to a solid state relay to control airflow
 const int pumpPin = 2;
 
-// Constants
-const unsigned char MAX_PUMP_SPEED = 120; // Speed ranges from 0 to 200 Hz
-    
 // Time in millis
 const unsigned int MILLISECOND = 1;
 const unsigned int SECOND = 1000 * MILLISECOND;
 const unsigned int MINUTE = 60 * SECOND;
 
-// What OD we are aiming for
-const float OD_TARGET = 0.4;
+// Constants for control loop:
+const float OD_TARGET = 0.4; // OD we are aiming for
+const int MAX_PUMP_SPEED = 200; // Speed ranges from 0 to 200 Hz
+const int MIN_PUMP_SPEED = 70; // Speed ranges from 0 to 200 Hz
+const int RESPONSE_SLOPE = 6500; // Pump freq / OD over target (see loop() for details)
+byte SHORTEN_DELAY_WHEN_PUMPING = 1; // shorten delay time from 1 minute to 30 seconds when pumping. This will allow for a faster response to overpumping.
+    
+
 
 // In-memory storage space
 unsigned int usedLogs = 0;
@@ -97,13 +100,18 @@ void loop() {
     }
     
     if(od > OD_TARGET) {
-        setPump(true); 
+        float rightspeed = (int) (MIN_PUMP_SPEED+ (od-OD_TARGET)*RESPONSE_SLOPE); // calculate the speed we want to have based on the OD
+        setPumpToFreq(min(rightspeed,MAX_PUMP_SPEED) ); // but be careful not to overload the pump!
+        if(SHORTEN_DELAY_WHEN_PUMPING) {
+            delay(30*SECOND);
+        } else {
+            delay(MINUTE);
+        }
     } else {
         setPump(false); 
+        delay(MINUTE);
     }
         
-
-    delay(MINUTE);
 }
 
 void setClamp(bool clamping) {
@@ -117,6 +125,10 @@ void setPump(bool pumping) {
   } else {
     noTone(pumpPin); 
   }
+}
+
+void setPumpToFreq(float frequency) {
+  tone(pumpPin, frequency);
 }
 
 void setLED(bool on) {
