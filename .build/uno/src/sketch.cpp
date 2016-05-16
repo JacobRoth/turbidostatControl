@@ -32,7 +32,7 @@ const float OD_TARGET = 0.4; // OD we are aiming for
 const int MAX_PUMP_SPEED = 200; // Speed ranges from 0 to 200 Hz
 const int MIN_PUMP_SPEED = 70; // Speed ranges from 0 to 200 Hz
 const int RESPONSE_SLOPE = 6500; // Pump freq / OD over target (see loop() for details)
-byte SHORTEN_DELAY_WHEN_PUMPING = 0; // shorten delay time from 1 minute to 30 seconds when pumping. This will allow for a faster response to overpumping.
+byte SHORTEN_DELAY_WHEN_PUMPING = 1; // shorten delay time from 1 minute to 30 seconds when pumping. This will allow for a faster response to overpumping.
     
 
 
@@ -46,7 +46,7 @@ unsigned int iteration = 0;
 byte SELF_TEST = 1;
 
 //Enable initial filling routine?
-byte INIT_FILL = 0;
+byte INIT_FILL = 1;
 
 void setup() {  
   // Output EEPROM values.

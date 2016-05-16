@@ -32,7 +32,7 @@ unsigned int iteration = 0;
 byte SELF_TEST = 1;
 
 //Enable initial filling routine?
-byte INIT_FILL = 0;
+byte INIT_FILL = 1;
 
 void setup() {  
   // Output EEPROM values.
